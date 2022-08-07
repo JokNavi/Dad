@@ -1,3 +1,4 @@
+import json
 import sys
 from itertools import count, combinations
 
@@ -105,16 +106,19 @@ def main():
         station_infos.append((station_id, start_point, distmap, inf))
 
     distances = {}
+    SendToFile = {}
     for (sa_id, sa_point, sa_map, sa_inf), (sb_id, sb_point, sb_map, sb_inf) in combinations(station_infos, 2):
         distance = sa_map[sb_point[::-1]]
         if distance >= sa_inf:
             distance = np.inf
         distances[tuple(sorted((sa_id, sb_id)))] = distance
         print(f"Distance between {sa_id} ({sa_point}) and {sb_id} ({sb_point}): {distance}")
-
+        SendToFile[sa_id] = distance
+    json.dump(SendToFile, open("CoordsTest.txt",'w'))
     print_distance_matrix(distances)
 
     fig, axs_grid = plt.subplots(4, len(station_positions) // 4, figsize=(15, 10))
+
     for subplot, (station_id, start_point, distmap, inf) in zip(axs_grid.flat, station_infos):
         # Prettify the distmap for display (invert, colorize)
         colorized_distmap = plt.cm.viridis(plt.Normalize()(inf - distmap))

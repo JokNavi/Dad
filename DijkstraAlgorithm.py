@@ -4,7 +4,7 @@ import json
  
 # create our graph using an adjacency list representation
 # each "node" in our list should be a node name and a distance
-with open('Coords.json') as f:
+with open('out/CoordsExmple.json') as f:
     data = f.read()
     graph = json.loads(data)
 #graph = {    0: [(1, 1)],    1: [(0, 1), (2, 2), (3, 3)],    2: [(1, 2), (3, 1), (4, 5)],    3: [(1, 3), (2, 1), (4, 1)],    4: [(2, 5), (3, 1)]}
