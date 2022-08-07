@@ -79,7 +79,7 @@ def print_distance_matrix(distances):
 
 
 def main():
-    image = cv2.imread("hHwyu.png", cv2.IMREAD_COLOR)
+    image = cv2.imread("LinesAlgorithem.png", cv2.IMREAD_COLOR)
 
     marker_color = (239, 30, 40)[::-1]  # RGB -> BGR
     route_color = (0, 0, 0)[::-1]
@@ -125,7 +125,8 @@ def main():
         subplot.axis("off")
 
     plt.tight_layout(pad=.7)
-    plt.savefig("all_distmaps.png", dpi=500)
+    # plt.show()
+    plt.savefig("out/all_distmaps.png", dpi=500)
 
 
 if __name__ == '__main__':

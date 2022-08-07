@@ -11,4 +11,4 @@ plt.xlabel('x-axis label')
 plt.ylabel('y-axis label')
 plt.title('Matplotlib Example')
  
-plt.savefig("output.jpg")
+plt.savefig("out/output.jpg")

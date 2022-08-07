@@ -1,0 +1,6 @@
+Learn Findroutes.py
+
+-itertools — Functions creating iterators for efficient looping
+TBD
+-cv2.threshold()
+TBD
