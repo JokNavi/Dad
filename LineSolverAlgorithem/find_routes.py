@@ -125,8 +125,7 @@ def main():
         subplot.axis("off")
 
     plt.tight_layout(pad=.7)
-    # plt.show()
-    plt.savefig("out/all_distmaps.png", dpi=500)
+    plt.savefig("all_distmaps.png", dpi=500)
 
 
 if __name__ == '__main__':
