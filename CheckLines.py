@@ -5,7 +5,7 @@ import math
 src_img = cv.imread('OnlyLines.png')
 cv.imshow('Original Image',src_img)
 
-dst_img = cv.Canny(src_img, 50, 100, None, 3)
+dst_img = cv.Canny(src_img, 100, 200)
 
 linesP = cv.HoughLinesP(dst_img, 1, np.pi / 180, 50, None, 50, 10)
 
