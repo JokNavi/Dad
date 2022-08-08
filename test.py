@@ -1,14 +1,32 @@
-import sys; print(sys.executable)
-import matplotlib.pyplot as plt
- 
-# data for plotting
-x = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
-y = [5, 7, 8, 1, 4, 9, 6, 3, 5, 2, 1, 8]
- 
-plt.plot(x, y)
- 
-plt.xlabel('x-axis label')
-plt.ylabel('y-axis label')
-plt.title('Matplotlib Example')
- 
-plt.savefig("out/output.jpg")
+# Python3 code to demonstrate
+# convert dictionary string to dictionary
+# using json.loads()
+import json
+from ast import literal_eval
+
+SendToFile = {"1" : ["John"], "2":[36]}
+f = 3
+x = 1
+FXold = [[int(f),int(x)]]
+f = 9
+x = 8
+FX = FXold +  [[int(f),int(x)]]
+FXold = [[int(f),int(x)]]
+#guests = ['1', tuple(FX)]
+f = 50
+x = 96
+FX = FXold + [[int(f),int(x)]]
+FXold = int(f),int(x)
+#guests = ['1', tuple(FX)]
+SendToFile.update({'1':tuple(FX)})
+print(SendToFile)
+json.dump(SendToFile, open("out/CoordsTest.json",'w'))
+
+# using json.loads()
+# convert dictionary string to dictionary
+with open('out/CoordsTest.json') as f:
+    data = f.read()
+    data = json.loads(data)
+# print result
+print(data)
+

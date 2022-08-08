@@ -1,6 +1,7 @@
 import json
 import sys
 from itertools import count, combinations
+from turtle import update
 
 import cv2
 import matplotlib.pyplot as plt
@@ -107,14 +108,26 @@ def main():
 
     distances = {}
     SendToFile = {}
+    HappendOnce = False
+    S_id = 0
     for (sa_id, sa_point, sa_map, sa_inf), (sb_id, sb_point, sb_map, sb_inf) in combinations(station_infos, 2):
         distance = sa_map[sb_point[::-1]]
         if distance >= sa_inf:
             distance = np.inf
         distances[tuple(sorted((sa_id, sb_id)))] = distance
         print(f"Distance between {sa_id} ({sa_point}) and {sb_id} ({sb_point}): {distance}")
-        SendToFile[sa_id] = distance
-    json.dump(SendToFile, open("CoordsTest.txt",'w'))
+        if S_id != sa_id and HappendOnce == True: 
+            SendToFile.update({sa_id-1:tuple(FX)})
+            S_id = sa_id
+            HappendOnce = False
+        if HappendOnce == True:
+            FX = FX +  [[int(sb_id),int(distance)]]
+            S_id = sa_id
+        else:
+            FX = [[int(sb_id),int(distance)]]
+            S_id = sa_id
+            HappendOnce = True
+    json.dump(SendToFile, open("out/CoordsTest.json",'w'))
     print_distance_matrix(distances)
 
     fig, axs_grid = plt.subplots(4, len(station_positions) // 4, figsize=(15, 10))

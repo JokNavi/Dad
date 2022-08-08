@@ -1,12 +1,14 @@
 from numpy import Inf
 import ast
 import json
+import re
  
 # create our graph using an adjacency list representation
 # each "node" in our list should be a node name and a distance
-with open('out/CoordsExmple.json') as f:
+with open('out/CoordsExample.json') as f:
     data = f.read()
     graph = json.loads(data)
+    print(str(graph))
 #graph = {    0: [(1, 1)],    1: [(0, 1), (2, 2), (3, 3)],    2: [(1, 2), (3, 1), (4, 5)],    3: [(1, 3), (2, 1), (4, 1)],    4: [(2, 5), (3, 1)]}
 # takes the graph and the starting node
 # returns a list of distances from the starting node to every other node
