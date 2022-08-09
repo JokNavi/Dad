@@ -6,5 +6,4 @@ OnlyGreenDots.png, black background
 OnlyLines, white background
 
 TODO:
-find all three colour coords
-
+Fix code
