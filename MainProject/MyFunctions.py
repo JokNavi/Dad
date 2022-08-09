@@ -3,6 +3,7 @@ import math
 import imutils
 import cv2
 import json
+import networkx as nx
 
 def Length(InputOne,InputTwo):
     #0,1 | x1, y1
@@ -10,18 +11,15 @@ def Length(InputOne,InputTwo):
     Dist = math.sqrt((int(InputTwo[0]) - int(InputOne[0]))**2 + (int(InputTwo[1]) - int(InputOne[1]))**2)
     #dist = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
     #print(Dist) 
-    return Dist
+    return Dist 
 
-def ShortestPath(Input, Weights, Goal):
-    g = Input
-    #6,        [(0, 1), (0, 2), (1, 3), (2, 3), (2, 4), (3, 5), (4, 5)]
-    # Find the shortest path on a weighted graph
-    g.es["weight"] = Weights
-    # g.get_shortest_paths() returns a list of edge ID paths
-    Results = g.get_shortest_paths(0,to=Goal,weights=g.es["weight"],output="epath",)
-    print(Results) 
-    return Results
-
+def ShortestPath(Graph,Start,End):
+    G = nx.Graph()
+    G.add_edge("0", "1", weight=4)
+    G.add_edge("1", "3", weight=2)
+    G.add_edge("0", "2", weight=3)
+    G.add_edge("2", "3", weight=4)
+    return nx.shortest_path(G, str(Start), str(End), weight="weight")
 def Center(Input):
     # load the image, convert it to grayscale, blur it slightly,
     # and threshold it
@@ -53,7 +51,14 @@ def Center(Input):
         print(Counter)
     with open('MainProject\Out\CoordsGreenDots.txt', 'w') as file:
         file.write(json.dumps(SendToFile))
-    cv2.imshow('image',image)
-    cv2.waitKey(0)
+    #cv2.imshow('image',image)
+    #cv2.waitKey(0)
+    #Center("out\OnlyGreenPoints.png")
     return SendToFile
-#Center("out\OnlyGreenPoints.png")
+
+def Colour(Input):
+    image = cv2.imread(Input)
+    for y in range(0, 100, 10):
+        for x in range(0, 100, 10):
+            color = image[x, y]
+    print(color)
