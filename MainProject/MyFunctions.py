@@ -7,7 +7,7 @@ import json
 def Length(InputOne,InputTwo):
     #0,1 | x1, y1
     #1,0 | x2, y2
-    dist = math.sqrt((int(InputTwo[2]) - int(InputOne[2]))**2 + (int(InputTwo[7]) - int(InputOne[7]))**2)
+    dist = math.sqrt((int(InputTwo[0]) - int(InputOne[0]))**2 + (int(InputTwo[1]) - int(InputOne[1]))**2)
     #dist = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
     print(dist) 
 
@@ -46,7 +46,7 @@ def Center(Input):
         cv2.putText(image, str(Counter), (cX - 20, cY - 20),
         cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
         #SendToFile[Counter]= [[int(cX),int(cY)]]
-        SendToFile[Counter]= [int(cX),int(cY)]
+        SendToFile[Counter]= (int(cX),int(cY))
         Counter = Counter+1
         print(Counter)
     with open('MainProject\Out\CoordsGreenDots.txt', 'w') as file:
