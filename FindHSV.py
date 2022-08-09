@@ -1,7 +1,7 @@
 import colorsys
 
 #input
-(r, g, b) = (20, 20, 20)
+(r, g, b) = (255, 0, 0)
 #normalize
 (r, g, b) = (r / 255, g / 255, b / 255)
 #convert to hsv
