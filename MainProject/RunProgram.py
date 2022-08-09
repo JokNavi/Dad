@@ -10,10 +10,12 @@ PointOne = int(PointNumbers[0])
 PointTwo = int(PointNumbers[1])
 with open("MainProject\Out\CoordsGreenDots.txt", 'r', encoding='utf-8') as File:
     Coords = json.load(File)
-#CoordNumbers = re.findall('[0-9]+\w+,*[0-9]+', str(Coords))
-Length(Coords[str(PointOne)],Coords[str(PointTwo)])
-Weight = [2, 1, 5, 4, 7, 3, 2]
-#ShortestPath(ig.Graph(6,ISPoints),Weight,4
+Weights = []
+for Point in ISPoints:
+    Weights.append(Length(Coords[str(PointOne)],Coords[str(PointTwo)]))
+    print(Weights)
+#Weight = [2, 1, 5, 4, 7, 3, 2]
+ShortestPath(ig.Graph(6,ISPoints),Weights,5)
 
 #VISUALISE
 #Center('MainProject\Out\OnlyGreenPoints.png')

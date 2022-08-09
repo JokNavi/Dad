@@ -7,18 +7,20 @@ import json
 def Length(InputOne,InputTwo):
     #0,1 | x1, y1
     #1,0 | x2, y2
-    dist = math.sqrt((int(InputTwo[0]) - int(InputOne[0]))**2 + (int(InputTwo[1]) - int(InputOne[1]))**2)
+    Dist = math.sqrt((int(InputTwo[0]) - int(InputOne[0]))**2 + (int(InputTwo[1]) - int(InputOne[1]))**2)
     #dist = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
-    print(dist) 
+    #print(Dist) 
+    return Dist
 
-def ShortestPath(Input, Weight, Goal):
+def ShortestPath(Input, Weights, Goal):
     g = Input
     #6,        [(0, 1), (0, 2), (1, 3), (2, 3), (2, 4), (3, 5), (4, 5)]
     # Find the shortest path on a weighted graph
-    g.es["weight"] = Weight
+    g.es["weight"] = Weights
     # g.get_shortest_paths() returns a list of edge ID paths
-    results = g.get_shortest_paths(0,to=Goal,weights=g.es["weight"],output="epath",)
-    print(results) 
+    Results = g.get_shortest_paths(0,to=Goal,weights=g.es["weight"],output="epath",)
+    print(Results) 
+    return Results
 
 def Center(Input):
     # load the image, convert it to grayscale, blur it slightly,
