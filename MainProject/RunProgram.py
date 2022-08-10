@@ -1,22 +1,24 @@
-import igraph as ig
-import re
+import sys
 import json
-import networkx as nx
-from MyFunctions import ShortestPath, Length, Center
-import matplotlib.pyplot as plt
+from PIL import Image
+from MyFunctions import ImageManipulation, Colours, CheckPaths, Paths
+
 #CALCULATE SHORTEST PATH
-Goal = 4
-AmountOfVert = 4
 with open("MainProject\Out\CoordsGreenDots.txt", 'r', encoding='utf-8') as File:
     Coords = json.load(File)
-Steps = []
-Graph = 'G'
-Start = "0"
-End = "3"
-Steps.append(ShortestPath(Graph, Start, End))
-print(Steps)
 
-#plt.show()
+I = ImageManipulation()
+#I.Mask('MainProject\Out\GreenAndRed.png','ff0000')
+#I.Center('MainProject\Out\OnlyGreenPoints.png')
 
-#VISUALISE
-#Center('MainProject\Out\OnlyGreenPoints.png')
+C = Colours()
+#C.RgbToHsv([255,0,0])
+#C.HexToRgb('#ff0000')
+
+Im = Image.open('MainProject\Out\LinesOnlyBlack.png')
+CH = CheckPaths(Im)
+CH.ReplaceColour(0,0)
+CH.FindColour(0,0)
+
+if (__name__ == '__main__'):
+    sys.exit()
