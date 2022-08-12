@@ -6,7 +6,6 @@ import json
 import imutils
 import numpy as np
 import networkx as nx
-import rhinoscriptsyntax as rs
 import matplotlib.pyplot as plt
 from PIL import Image  
 from skimage.morphology import skeletonize
@@ -70,9 +69,9 @@ class ImageManipulation():
             Skeleton.astype(int)*255 
             input_image = np.array((Skeleton), dtype="uint8")
             kernel = np.array((
-                    [0, 0, 0,],
-                    [0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0],
-                    [0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0],), dtype="int")
+            [0, 1, 0],
+            [1, -1, 1],
+            [0, 1, 0]), dtype="int")
             output_image = cv2.morphologyEx(input_image, cv2.MORPH_HITMISS, kernel)
             rate = 50
             kernel = (kernel + 1) * 127
@@ -92,24 +91,17 @@ class ImageManipulation():
         def GoodTrack(): 
             img = cv2.imread('MainProject\Out\Lines.jpg')
             gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-            corners = cv2.goodFeaturesToTrack(gray,90,0.01,10)
+            corners = cv2.goodFeaturesToTrack(gray,100,0.5,0.0001)
             corners = np.int0(corners)
             for i in corners:
                 x,y = i.ravel()
-                cv2.circle(img,(x,y),3,255,-1)
+                cv2.rectangle(img,(x-5,y+5),(x+5,y-5),255,-1)
             plt.imshow(img),plt.show()
         
-        #ImBinary = Binary()
-        #Skeleton = Skeletonise(ImBinary)
-        #HitOrMiss(Skeleton)
+        ImBinary = Binary()
+        Skeleton = Skeletonise(ImBinary)
+        HitOrMiss(Skeleton)
         #GoodTrack()
-        def RhinoSol():
-            obj = rs.GetObject("Select a line")
-            if rs.IsLine(obj):
-                print("The object is a line.")
-            else:
-                print ("The object is not a line.")
-        RhinoSol()
 
     def Center(self, Input):
         # load the image, convert it to grayscale, blur it slightly,
@@ -153,6 +145,7 @@ class Paths():
         #dist = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
         Dist = math.sqrt((int(InputTwo[0]) - int(InputOne[0]))**2 + (int(InputTwo[1]) - int(InputOne[1]))**2) 
         return Dist 
+        
     def ShortestPath(self,Start,End,Nodes):
         G = nx.Graph()
         G.add_edge("0", "1", weight=4)
