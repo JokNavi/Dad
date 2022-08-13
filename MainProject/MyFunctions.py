@@ -3,12 +3,8 @@ import sys
 import cv2
 import math
 import json
-import imutils
 import numpy as np
-import networkx as nx
-import matplotlib.pyplot as plt
-from PIL import Image  
-from skimage.morphology import skeletonize
+import networkx as nx 
 
 class Colours():
 
@@ -24,120 +20,6 @@ class Colours():
         print (Output)
         return Output
 
-class ImageManipulation():
-
-    def MakeIntersect(self):
-        def Binary():
-            #Make image binary
-            img=cv2.imread('MainProject\Out\Lines.jpg') 
-            ImGray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY) 
-            thresh = 5
-            im_bw = cv2.threshold(ImGray, thresh, 255, cv2.THRESH_BINARY)[1]
-            ImBinary = np.array(im_bw, dtype=bool)
-            return ImBinary
-
-        def Skeletonise(ImBinary):
-            # Invert the horse image
-            image = ImBinary
-            # perform skeletonization
-            skeleton = skeletonize(image)
-            # display results
-            fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(8, 4),
-                                    sharex=True, sharey=True)
-            ax = axes.ravel()
-            ax[0].imshow(image, cmap=plt.cm.gray)
-            ax[0].axis('off')
-            ax[0].set_title('original', fontsize=20)
-            ax[1].imshow(skeleton, cmap=plt.cm.gray)
-            ax[1].axis('off')
-            ax[1].set_title('skeleton', fontsize=20)
-            fig.tight_layout()
-            plt.show()
-            return skeleton
-            
-        def HitOrMiss(Skeleton):
-            '''input_image = np.array((
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 255, 255, 255, 0, 0, 0, 255],
-    [0, 255, 255, 255, 0, 0, 0, 0],
-    [0, 255, 255, 255, 0, 255, 0, 0],
-    [0, 0, 255, 0, 0, 0, 0, 0],
-    [0, 0, 255, 0, 0, 255, 255, 0],
-    [0,255, 0, 255, 0, 0, 255, 0],
-    [0, 255, 255, 255, 0, 0, 0, 0]), dtype="uint8")'''
-            
-            Skeleton.astype(int)*255 
-            input_image = np.array((Skeleton), dtype="uint8")
-            kernel = np.array((
-            [0, 1, 0],
-            [1, -1, 1],
-            [0, 1, 0]), dtype="int")
-            output_image = cv2.morphologyEx(input_image, cv2.MORPH_HITMISS, kernel)
-            rate = 50
-            kernel = (kernel + 1) * 127
-            kernel = np.uint8(kernel)
-            kernel = cv2.resize(kernel, None, fx = rate, fy = rate, interpolation = cv2.INTER_NEAREST)
-            cv2.imshow("kernel", kernel)
-            cv2.moveWindow("kernel", 0, 0)
-            input_image = cv2.resize(input_image, None, fx = rate, fy = rate, interpolation = cv2.INTER_NEAREST)
-            cv2.imshow("Original", input_image)
-            cv2.moveWindow("Original", 0, 200)
-            output_image = cv2.resize(output_image, None , fx = rate, fy = rate, interpolation = cv2.INTER_NEAREST)
-            cv2.imshow("Hit or Miss", output_image)
-            cv2.moveWindow("Hit or Miss", 500, 200)
-            cv2.waitKey(0)
-            cv2.destroyAllWindows()
-
-        def GoodTrack(): 
-            img = cv2.imread('MainProject\Out\Lines.jpg')
-            gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-            corners = cv2.goodFeaturesToTrack(gray,100,0.5,0.0001)
-            corners = np.int0(corners)
-            for i in corners:
-                x,y = i.ravel()
-                cv2.rectangle(img,(x-5,y+5),(x+5,y-5),255,-1)
-            plt.imshow(img),plt.show()
-        
-        ImBinary = Binary()
-        Skeleton = Skeletonise(ImBinary)
-        HitOrMiss(Skeleton)
-        #GoodTrack()
-
-    def Center(self, Input):
-        # load the image, convert it to grayscale, blur it slightly,
-        # and threshold it
-        image = cv2.imread(Input)
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        blurred = cv2.GaussianBlur(gray, (5, 5), 0)
-        thresh = cv2.threshold(blurred, 60, 255, cv2.THRESH_BINARY)[1]
-        # find contours in the thresholded image
-        cnts = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,
-            cv2.CHAIN_APPROX_SIMPLE)
-        cnts = imutils.grab_contours(cnts)
-        # loop over the contours
-        SendToFile = {}
-        Counter = 0
-        n = 2
-        for c in cnts:
-        # compute the center of the contour
-            M = cv2.moments(c)
-            cX = int(M["m10"] / M["m00"])
-            cY = int(M["m01"] / M["m00"])
-            # draw the contour and center of the shape on the image
-            cv2.drawContours(image, [c], -1, (0, 255, 0), 2)
-            cv2.circle(image, (cX, cY), 7, (255, 255, 255), -1)
-            cv2.putText(image, str(Counter), (cX - 20, cY - 20),
-            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
-            #SendToFile[Counter]= [[int(cX),int(cY)]]
-            SendToFile[Counter]= (int(cX),int(cY))
-            Counter = Counter+1
-            print(Counter)
-        cv2.imshow('image',image)
-        cv2.waitKey(0)
-        with open('MainProject\Out\CoordsGreenDots.json', 'w') as File:
-            File.write(json.dumps(SendToFile))
-            File.close()
-            return SendToFile
 class Paths():  
     def Length(self,InputOne,InputTwo):
         #0,1 | x1, y1
@@ -169,7 +51,8 @@ class CheckPaths():
             pix = self.Im.load()
             pix[X,Y] = 255,255,255
             self.Im.save('MainProject\Out\Modified.png')
-    def FindEdges(self, Dot, Check):
+
+    def FindEdges(self, Dot, DirectionsL):
         with open('MainProject\Out\CoordsGreenDots.json') as File:
             Coords = json.load(File)
         File.close()
@@ -177,19 +60,18 @@ class CheckPaths():
         Minus = lambda a : int(a) - 15
         Plus = lambda a : int(a) + 15
         #Output = (0,0,0)
-        if '-X' in Check and CheckPaths.FindColour(self,Minus(Coord[0]),Coord[1])>(20,20,20):
+        if '-X' in DirectionsL and CheckPaths.FindColour(self,Minus(Coord[0]),Coord[1])>(20,20,20):
             return '-X'
 
-        if '+X' in Check and CheckPaths.FindColour(self,Plus(Coord[0]),Coord[1])>(20,20,20):
+        if '+X' in DirectionsL and CheckPaths.FindColour(self,Plus(Coord[0]),Coord[1])>(20,20,20):
                 return '+X'
 
-        if '-Y' in Check and CheckPaths.FindColour(self,Coord[0],Minus(Coord[1]))>(20,20,20):
+        if '-Y' in DirectionsL and CheckPaths.FindColour(self,Coord[0],Minus(Coord[1]))>(20,20,20):
                 return '-Y'
 
-        if '+Y' in Check and CheckPaths.FindColour(self,Coord[0],Plus(Coord[1]))>(20,20,20):
+        if '+Y' in DirectionsL and CheckPaths.FindColour(self,Coord[0],Plus(Coord[1]))>(20,20,20):
                 return '+Y'
-
-        else: return 'None'
+        else: return None
             
     def ClosestDot(self, Dot, Facing):
         with open('MainProject\Out\CoordsGreenDots.json') as File:
@@ -250,7 +132,6 @@ class CheckPaths():
     def FindClosest(self,Axis,SpecialCoord):
         with open('MainProject\Out\CoordsGreenDots.json') as File:
             Coords = json.load(File)
-        
         
         #myArr[myArr < myNumber].max()
 

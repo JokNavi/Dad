@@ -1,18 +1,21 @@
+import re
 import sys
-import json
 from PIL import Image
-from MyFunctions import ImageManipulation, Colours, CheckPaths, Paths
+from MyFunctions import CheckPaths, Paths
+from ImageStuff import Tracking, ImageManipulation, Intersects
 
 #TESTING
-I = ImageManipulation()
+Im = Image.open('MainProject\Out\Lines.jpg')
+I = ImageManipulation(Im)
+#I.TrackCorners('MainProject\Out\Lines.jpg')
 #I.Center('MainProject\Out\Intersects.jpg')
-I.MakeIntersect()
 
-C = Colours()
-#C.RgbToHsv([250,0,4])
-#C.HexToRgb('#0000ff')
+C = Tracking()
+Directions = ['-X','+X','-Y','+Y']
+Dot = 0
+#C.FindEdges(Dot,Directions,Coords)
 
-Im = Image.open('MainProject\Out\IntersectAndLines.jpg')
+Im = Image.open('MainProject\Out\Lines.jpg')
 CH = CheckPaths(Im)
 #print(CH.Size())
 #print(CH.FindColour(0,0))
@@ -30,17 +33,22 @@ Dot = 1
 #Axis = CP.ClosestDot(1,Facing)
 #print(CP.FindClosest(Facing,Axis))
 
-#PROGRAM
-'''Dot = 1
-Counter = 0
-Directions = ['-X','+X','-Y','+Y']
-while Counter < 4:
-    Facing =  CP.FindEdges(Dot,Directions)
-    print(f'Facing: {Facing}')
-    if Facing in Directions:
-        print(f'Closest Dot: {CP.ClosestDot(Dot,Facing)}')
-        Directions.remove(Facing)
-    Counter = Counter + 1'''
+
+class MainProgram():
+    #PROGRAM
+    def Start():
+        M = MainProgram()
+        I = Intersects()
+        
+        Img = 'MainProject\Out\Lines.jpg'
+        Coords = I.TrackCorners(Img)
+        Imag = Image.open('MainProject\Out\Lines.jpg')
+        Intersects.append(I.FindIntersect(Imag))
+        
+        
+
+#RUN [(90, 726), (80, 736)]
+print(MainProgram.Start())
 
 if (__name__ == '__main__'):
     sys.exit()
