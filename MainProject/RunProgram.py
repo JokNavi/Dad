@@ -44,8 +44,6 @@ class MainProgram():
         Coords = I.TrackCorners(Img)
         Imag = Image.open('MainProject\Out\Lines.jpg')
         Intersects.append(I.FindIntersect(Imag))
-        
-        
 
 #RUN [(90, 726), (80, 736)]
 print(MainProgram.Start())

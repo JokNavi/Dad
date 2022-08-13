@@ -110,14 +110,14 @@ class Intersects():
     def __init__(self,ImagePath):
         self.Photo = ImagePath
 
-    def FindLines(self, Img, Coord):
+    def FindLines(self, Coord):
+        C = Tracking()
         Facing = []
         Directions = ['-X','+X','-Y','+Y']
         for x in  range(4):
-            FacingRightNow = (C.FindEdges(Img,Directions,Coord))
+            FacingRightNow = (C.FindEdges(self.Photo,Directions,Coord))
             if FacingRightNow in Directions:
                 Directions.remove(FacingRightNow)
-                #ModifiedCoord.append(I.PlaceIntersect(Coord, Facing))
             Facing.append(FacingRightNow)
         return Facing
        
@@ -137,7 +137,6 @@ class Intersects():
         Facing = list(filter(('N').__ne__, Facing))
         return Facing
 
-
     def FindIntersect(self):
         ImagePath = Image.open(self.Photo)
         I = ImageManipulation(ImagePath)
@@ -145,22 +144,22 @@ class Intersects():
         Coords = I.TrackCorners(self.Photo)
         Dot = 1
         Coord = Coords[Dot]
-         #Coord = [(90, 726), (80, 736)]
+        #Coord = [(90, 726), (80, 736)]
         Coord = re.findall('[0-9]+', str(Coord))
-        Facing = M.FindLines(self.Photo, Coord)
+        Facing = M.FindLines(Coord)
         Facing = M.RemoveNone(Facing)
 
         if len(Facing) == 3: return 'Error 3 Sides match. Wierd coord location.'
         if len(Facing) >= 4:
             print('\n')  
             Coord = M.PlusCoord(Coord)
-            Facing = M.FindLines(self.Photo, Coord)
+            Facing = M.FindLines(Coord)
             Facing = M.RemoveNone(Facing)
             Coord =  M.MinusCoord(Coord)
         if len(Facing) >= 4:
             print('\n')  
             Coord = M.MinusCoord(Coord)
-            Facing = M.FindLines(self.Photo, Coord)
+            Facing = M.FindLines(Coord)
             Facing = M.RemoveNone(Facing)
             Coord = M.PlusCoord(Coord)
         if len(Facing) == 3: return 'Error 4 Sides match. Wierd coord location.'
