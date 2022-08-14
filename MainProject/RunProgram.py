@@ -42,13 +42,8 @@ while Dot < 64:
     Dot = Dot + 1'''
 
 class MainProgram():
-    #PROGRAM
-    def Start():
-        Im = Image.open('MainProject\Out\Lines.tif')
-        I = Intersects('MainProject\Out\Lines.tif')
-        IM = ImageManipulation(Im)
-
-        Coords = IM.TrackCorners('MainProject\Out\Lines.tif')
+    #FUNCTIONS
+    def ShowIntersects(self, Coords):
         Dot = 0
         print(len(Coords))
         Points = []
@@ -58,7 +53,21 @@ class MainProgram():
             Coord = Points[Dot]
             pix[int(Coord[0]),int(Coord[1])] = (255,255,255)
             Dot = Dot + 1
-        Im.save('MainProject\Out\Intersects.tif') 
+        Im.save('MainProject\Out\Intersects.tif')
+
+    #PROGRAM
+    def Start():
+        Im = Image.open('MainProject\Out\Lines.tif')
+        I = Intersects('MainProject\Out\Lines.tif')
+        M = MainProgram()
+        IM = ImageManipulation(Im)
+        Coords = IM.TrackCorners('MainProject\Out\Lines.tif')
+        M.ShowIntersects(Coords)
+        #CP = CheckPaths(Im, Coords)
+        #FindEdges(self, Coord, DirectionsL)
+        #CP.FindClosest()
+
+        
 #RUN [(90, 726), (80, 736)
 print(MainProgram.Start())
 
