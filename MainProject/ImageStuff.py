@@ -48,23 +48,18 @@ class Intersects():
         CoordEdit = CoordSpecific
         print(CoordSpecific)
         HadToModify = False
-        Happened = 0
-        for Direction in Directions: 
+        for Direction in Directions:
             CoordEdit = M.ChangeCoord(CoordSpecific, Direction, 1)
-            Facing = M.FindLines(CoordEdit)
-            Facing = M.RemoveNone(Facing)
-            print('Extra: '+str(CoordEdit))
-            if len(Facing) >= 4:  Happened+=1
-            print(Happened)
-            if Happened >= 2: HadToModify = True
+            FacingTemp = M.FindLines(CoordEdit)
+            FacingTemp = M.RemoveNone(FacingTemp)
+            if len(FacingTemp) == 1: HadToModify = True
 
         if HadToModify == True: 
             CoordSpecific = IM.EditCoord(CoordSpecific, Facing[0],16)
-            CoordSpecific = IM.EditCoord(CoordSpecific, Facing[1],18)
+            CoordSpecific = IM.EditCoord(CoordSpecific, Facing[1],15)
         else: 
             CoordSpecific = IM.EditCoord(CoordSpecific, Facing[0],16)
-            CoordSpecific = IM.EditCoord(CoordSpecific, Facing[1],15)
-        Count = Count + 1
+            CoordSpecific = IM.EditCoord(CoordSpecific, Facing[1],16)
         print(CoordSpecific)
         #IM.ReplaceColour(CoordSpecific[0],CoordSpecific[1], (255,255,255), 'MainProject\Out\Modified.tif')
 

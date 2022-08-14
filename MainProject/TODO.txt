@@ -1,9 +1,2 @@
-INFO:
-20 size for (255,0,0) red ff0000
-40 size for (0,255,0) green 00ff01
-50 size for (0,0,255) blue 0000fe
-OnlyGreenDots.png, black background
-OnlyLines, white background
-
-TODO:
-Fix code
+PLAN OF ATTACK
+-write it down
