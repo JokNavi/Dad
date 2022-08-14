@@ -55,7 +55,7 @@ class Intersects():
             if len(FacingTemp) == 1: HadToModify = True
 
         if HadToModify == True: 
-            CoordSpecific = IM.EditCoord(CoordSpecific, Facing[0],16)
+            CoordSpecific = IM.EditCoord(CoordSpecific, Facing[0],15)
             CoordSpecific = IM.EditCoord(CoordSpecific, Facing[1],15)
         else: 
             CoordSpecific = IM.EditCoord(CoordSpecific, Facing[0],16)
