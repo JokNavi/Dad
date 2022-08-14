@@ -34,13 +34,13 @@ Dot = 0
 #print(CP.FindClosest(Facing,Axis))
 
 I = Intersects('MainProject\Out\Lines.tif')
-'''Coords = IM.TrackCorners('MainProject\Out\Lines.tif')
-Dot = 0
-while Dot < 64:
-    CoordSpecific = Coords[Dot]
-    CoordSpecific = re.findall('[0-9]+', str(CoordSpecific))
-    IM.ReplaceColour(CoordSpecific[0], CoordSpecific[1], (255,255,255), 'MainProject\Out\Corners.tif')
-    Dot = Dot + 1'''
+Coords = IM.TrackCorners('MainProject\Out\Lines.tif')
+Dot = 34
+#while Dot < 64:
+CoordSpecific = Coords[Dot]
+CoordSpecific = re.findall('[0-9]+', str(CoordSpecific))
+IM.ReplaceColour(CoordSpecific[0], CoordSpecific[1], (255,255,255), 'MainProject\Out\Corners.tif')
+Dot = Dot + 1
 
 class MainProgram():
     #PROGRAM

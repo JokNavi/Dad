@@ -25,12 +25,10 @@ class Intersects():
     def ChangeCoord(self, Coord, Facing, Amount):
         Minus = lambda a : int(a) - Amount
         Plus = lambda a : int(a) + Amount
-
-        if Facing == '-X': return [Coord[0], Minus(Coord[1])]
-        if Facing == '-Y': return [Minus(Coord[0]), Coord[1]]
-
-        if Facing == '+X': return [Coord[0], Plus(Coord[1])]
-        if Facing == '+Y': return [Plus(Coord[0]), Coord[1]]
+        if Facing == 'LeftTop': return [Minus(Coord[0]), Plus(Coord[1])]
+        if Facing == 'RightTop': return [Plus(Coord[0]), Plus(Coord[1])]
+        if Facing == 'LeftBottom': return [Minus(Coord[0]), Minus(Coord[1])]
+        if Facing == 'RightBottom': return [Plus(Coord[0]), Minus(Coord[1])]
         return Coord
 
     def RemoveNone(self, Facing):
@@ -41,40 +39,41 @@ class Intersects():
         Im = Image.open(self.PhotoPath)
         IM = ImageManipulation(Im)
         M = Intersects(Im)
-        Directions = ['-X','+X','-Y','+Y']
+        Directions = ['LeftTop','RightTop','LeftBottom','RightBottom']
         Coords = IM.TrackCorners(self.PhotoPath)
         CoordSpecific = Coords[Dot]
         #Coord = [(90, 726), (80, 736)]
         CoordSpecific = re.findall('[0-9]+', str(CoordSpecific))
         Facing = M.FindLines(CoordSpecific)
         Facing = M.RemoveNone(Facing)
-        Count = 0
         CoordEdit = CoordSpecific
         print(CoordSpecific)
         HadToModify = False
-
-        while len(Facing) >= 3 or len(Facing) <= 1:
-            CoordEdit = M.ChangeCoord(CoordEdit, Directions[Count], 1)
+        Count = 0
+        CountTwo = Count
+        while len(Facing) <= 1 or len(Facing) >= 3:
+            CoordEdit = M.ChangeCoord(CoordSpecific, Directions[Count], 1)
+            CountTwo = Count
             Facing = M.FindLines(CoordEdit)
             Facing = M.RemoveNone(Facing)
+            print('Extra: '+str(CoordEdit))
             Count = Count + 1
-            print('Extra: '+str(CoordSpecific))
             HadToModify = True
-        Counter = 0
-        Im.save('MainProject\Out\Modified.tif')
-        #IM.ReplaceColour(Coord[0],Coord[1], (255,255,255), 'MainProject\Out\Modified.tif')
+        CoordEdit = M.ChangeCoord(CoordSpecific, Directions[CountTwo], 1)
+        CoordSpecific = CoordEdit
+
         if HadToModify == False:
-            while Counter < len(Facing):
-                CoordSpecific = IM.ChangeCoord(CoordSpecific, Facing[Counter],11)
-                Counter = Counter + 1
-                print(CoordSpecific)
+            CoordSpecific = IM.EditCoord(CoordSpecific, Facing[0],11)
+            #CoordSpecific = IM.EditCoord(CoordSpecific, Facing[1],11)
+            Count = Count + 1
+            print(CoordSpecific)
             IM.ReplaceColour(CoordSpecific[0],CoordSpecific[1], (255,255,255), 'MainProject\Out\Modified.tif')
 
         elif HadToModify == True:
-            while Counter < len(Facing):
-                CoordSpecific = IM.ChangeCoord(CoordSpecific, Facing[Counter],9)
-                Counter = Counter + 1
-                print(CoordSpecific)
+            CoordSpecific = IM.EditCoord(CoordSpecific, Facing[0],12)
+            #CoordSpecific = IM.EditCoord(CoordSpecific, Facing[1],9)
+            Count = Count + 1
+            print(CoordSpecific)
             IM.ReplaceColour(CoordSpecific[0],CoordSpecific[1], (255,255,0), 'MainProject\Out\Modified.tif')
         print('\n')
         print(Facing)
