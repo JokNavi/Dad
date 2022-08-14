@@ -1,10 +1,11 @@
 #FUNCTIONS
+import re
 import sys
 import cv2
 import math
-import json
 import numpy as np
-import networkx as nx 
+import networkx as nx
+from PIL import Image
 
 class Colours:
 
@@ -38,47 +39,66 @@ class Paths():
 
 class CheckPaths:
     def __init__(self, ImagePath, Coords):
-        self.PhotoPath = ImagePath
+        self.ImagePath = ImagePath
         self.Coords = Coords
 
     def Size(self):
         return self.Im.size
 
     def FindColour(self, X, Y):
-            pix = self.Im.load()
-            return pix[X,Y]
+            Im = Image.open('MainProject\Out\Lines.tif')
+            pix = Im.load()
+            return pix[int(X),int(Y)]
 
     def ReplaceColour(self,X,Y):
-            pix = self.Im.load()
-            pix[X,Y] = 255,255,255
-            self.Im.save('MainProject\Out\Modified.png')
+            Im = Image.open('MainProject\Out\Lines.tif')
+            pix = Im.load()
+            pix[int(X),int(Y)] = 255,255,255
+            Im.save('MainProject\Out\Modified.tif')
 
-    def FindEdges(self, Coord, Direction):
-        Minus = lambda a : int(a) - 15
-        Plus = lambda a : int(a) + 15
-        if '-X' in Direction and CheckPaths.FindColour(self,Minus(Coord[0]),Coord[1])>(20,20,20):
+    def FindEdges(self, Coord, Direction, Value):
+        Minus = lambda a : int(a) - Value
+        Plus = lambda a : int(a) + Value
+        if '-X' in Direction and CheckPaths.FindColour(self, Minus(Coord[0]),int(Coord[1]))>(30,30,30):
             return '-X'
-        if '+X' in Direction and CheckPaths.FindColour(self,Plus(Coord[0]),Coord[1])>(20,20,20):
+        if '+X' in Direction and CheckPaths.FindColour(self, Plus(Coord[0]),int(Coord[1]))>(30,30,30):
                 return '+X'
-        if '-Y' in Direction and CheckPaths.FindColour(self,Coord[0],Minus(Coord[1]))>(20,20,20):
+        if '-Y' in Direction and CheckPaths.FindColour(self, int(Coord[0]),Minus(Coord[1]))>(30,30,30):
                 return '-Y'
-        if '+Y' in Direction and CheckPaths.FindColour(self,Coord[0],Plus(Coord[1]))>(20,20,20):
+        if '+Y' in Direction and CheckPaths.FindColour(self, int(Coord[0]),Plus(Coord[1]))>(30,30,30):
                 return '+Y'
         else: return None
             
     def ClosestDot(self, Coord):
-        CP = CheckPaths('MainProject\Out\Lines.tif', self.Coords)
+        CP = CheckPaths('MainProject\Out\Intersects.tif', self.Coords)
         Directions = ['-X','+X','-Y','+Y']
-        FoundWhite = False
+        Im = Image.open('MainProject\Out\Intersects.tif')
+        Coord = list(Coord)
         for Direction in Directions:
-            if CP.FindEdges(self, Coord, Direction) != None:
-                pass #then go untill you hit an intersect
-            
+            Looking = CP.FindEdges(Coord, Direction, 16)
+            if Looking != None:
+                print(Looking)
+                Minus = lambda a : int(a) - 1
+                Plus = lambda a : int(a) + 1
+                MoveOne = CP.FindColour(Coord[0], Coord[1])
+                while MoveOne <= (250,250,250) or abs(int(Coord[0])) >= 1000 or abs(int(Coord[1])) >= 1000:
+                    pix = Im.load()
+                    pix[int(Coord[0]),int(Coord[1])] = 255,255,255
+                    if '-X' in Direction: Coord = [Minus(Coord[0]),int(Coord[1])]
+                    if '+X' in Direction: Coord = [Plus(Coord[0]),int(Coord[1])]
+                    if '-Y' in Direction: Coord = [int(Coord[0]),Minus(Coord[1])]
+                    if '+Y' in Direction: Coord = [int(Coord[0]), Plus(Coord[1])]
+                    MoveOne = CP.FindColour(int(Coord[0]), int(Coord[1]))
+                Im.save('MainProject\Out\Modified.jpg')
+                return Coord
+
+                
             
     def FindClosest(self):
-        CP = CheckPaths('MainProject\Out\Lines.tif', self.Coords)
+        CP = CheckPaths('MainProject\Out\Intersects.tif', self.Coords)
         for Coord in self.Coords:
-            CP.ClosestDot(self, Coord)
+            Coord = re.findall('[0-9]+', str(Coord))
+            PointTwo = CP.ClosestDot(Coord)
         
         #myArr[myArr < myNumber].max()
  

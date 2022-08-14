@@ -64,7 +64,6 @@ class Intersects():
             CoordSpecific = IM.EditCoord(CoordSpecific, Facing[1],16)
         print(CoordSpecific)
         #IM.ReplaceColour(CoordSpecific[0],CoordSpecific[1], (255,255,255), 'MainProject\Out\Modified.tif')
-
         print('\n')
         print(Facing)
         return CoordSpecific  

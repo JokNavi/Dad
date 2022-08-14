@@ -54,6 +54,7 @@ class MainProgram():
             pix[int(Coord[0]),int(Coord[1])] = (255,255,255)
             Dot = Dot + 1
         Im.save('MainProject\Out\Intersects.tif')
+        return Points
 
     #PROGRAM
     def Start():
@@ -61,11 +62,10 @@ class MainProgram():
         I = Intersects('MainProject\Out\Lines.tif')
         M = MainProgram()
         IM = ImageManipulation(Im)
-        Coords = IM.TrackCorners('MainProject\Out\Lines.tif')
-        M.ShowIntersects(Coords)
+        CoordsCorners = IM.TrackCorners('MainProject\Out\Lines.tif')
+        Coords = M.ShowIntersects(CoordsCorners)
         CP = CheckPaths('MainProject\Out\Lines.tif', Coords)
-        CP.FindClosest(Axis,SpecialCoord)
-        #CP.FindClosest()
+        CP.FindClosest()
 
         
 #RUN [(90, 726), (80, 736)
