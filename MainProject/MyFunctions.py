@@ -37,6 +37,10 @@ class Paths():
         return nx.shortest_path(G, str(Start), str(End), weight="weight")
 
 class CheckPaths():
+    def __init__(self, ImagePath, Coords):
+        self.PhotoPath = ImagePath
+        self.Coords = Coords
+
     def __init__(self,Im):
         self.Im = Im
 
@@ -52,23 +56,15 @@ class CheckPaths():
             pix[X,Y] = 255,255,255
             self.Im.save('MainProject\Out\Modified.png')
 
-    def FindEdges(self, Dot, DirectionsL):
-        with open('MainProject\Out\CoordsGreenDots.json') as File:
-            Coords = json.load(File)
-        File.close()
-        Coord = Coords[f'{Dot}']
+    def FindEdges(self, Coord, DirectionsL):
         Minus = lambda a : int(a) - 15
         Plus = lambda a : int(a) + 15
-        #Output = (0,0,0)
         if '-X' in DirectionsL and CheckPaths.FindColour(self,Minus(Coord[0]),Coord[1])>(20,20,20):
             return '-X'
-
         if '+X' in DirectionsL and CheckPaths.FindColour(self,Plus(Coord[0]),Coord[1])>(20,20,20):
                 return '+X'
-
         if '-Y' in DirectionsL and CheckPaths.FindColour(self,Coord[0],Minus(Coord[1]))>(20,20,20):
                 return '-Y'
-
         if '+Y' in DirectionsL and CheckPaths.FindColour(self,Coord[0],Plus(Coord[1]))>(20,20,20):
                 return '+Y'
         else: return None
@@ -130,11 +126,9 @@ class CheckPaths():
                 return Coord[1]
 
     def FindClosest(self,Axis,SpecialCoord):
-        with open('MainProject\Out\CoordsGreenDots.json') as File:
-            Coords = json.load(File)
+        pass
         
         #myArr[myArr < myNumber].max()
-
  
 if(__name__ == '__main__'):
     sys.exit()

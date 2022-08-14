@@ -9,6 +9,7 @@ from PIL import Image
 class Intersects():
     def __init__(self,ImagePath):
         self.PhotoPath = ImagePath
+        
 
     def FindLines(self, Coord):
         C = Tracking(self.PhotoPath)
@@ -48,6 +49,7 @@ class Intersects():
         CoordEdit = CoordSpecific
         print(CoordSpecific)
         HadToModify = False
+
         for Direction in Directions:
             CoordEdit = M.ChangeCoord(CoordSpecific, Direction, 1)
             FacingTemp = M.FindLines(CoordEdit)
