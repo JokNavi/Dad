@@ -1,5 +1,4 @@
 #FUNCTIONS
-import io
 import re
 import cv2
 import json
@@ -49,32 +48,26 @@ class Intersects():
         CoordEdit = CoordSpecific
         print(CoordSpecific)
         HadToModify = False
-        Count = 0
-        CountTwo = Count
-        while len(Facing) <= 1 or len(Facing) >= 3:
-            CoordEdit = M.ChangeCoord(CoordSpecific, Directions[Count], 1)
-            CountTwo = Count
+        Happened = 0
+        for Direction in Directions: 
+            CoordEdit = M.ChangeCoord(CoordSpecific, Direction, 1)
             Facing = M.FindLines(CoordEdit)
             Facing = M.RemoveNone(Facing)
             print('Extra: '+str(CoordEdit))
-            Count = Count + 1
-            HadToModify = True
-        CoordEdit = M.ChangeCoord(CoordSpecific, Directions[CountTwo], 1)
-        CoordSpecific = CoordEdit
+            if len(Facing) >= 4:  Happened+=1
+            print(Happened)
+            if Happened >= 2: HadToModify = True
 
-        if HadToModify == False:
-            CoordSpecific = IM.EditCoord(CoordSpecific, Facing[0],11)
-            #CoordSpecific = IM.EditCoord(CoordSpecific, Facing[1],11)
-            Count = Count + 1
-            print(CoordSpecific)
-            IM.ReplaceColour(CoordSpecific[0],CoordSpecific[1], (255,255,255), 'MainProject\Out\Modified.tif')
+        if HadToModify == True: 
+            CoordSpecific = IM.EditCoord(CoordSpecific, Facing[0],16)
+            CoordSpecific = IM.EditCoord(CoordSpecific, Facing[1],18)
+        else: 
+            CoordSpecific = IM.EditCoord(CoordSpecific, Facing[0],16)
+            CoordSpecific = IM.EditCoord(CoordSpecific, Facing[1],15)
+        Count = Count + 1
+        print(CoordSpecific)
+        #IM.ReplaceColour(CoordSpecific[0],CoordSpecific[1], (255,255,255), 'MainProject\Out\Modified.tif')
 
-        elif HadToModify == True:
-            CoordSpecific = IM.EditCoord(CoordSpecific, Facing[0],12)
-            #CoordSpecific = IM.EditCoord(CoordSpecific, Facing[1],9)
-            Count = Count + 1
-            print(CoordSpecific)
-            IM.ReplaceColour(CoordSpecific[0],CoordSpecific[1], (255,255,0), 'MainProject\Out\Modified.tif')
         print('\n')
         print(Facing)
         return CoordSpecific  
