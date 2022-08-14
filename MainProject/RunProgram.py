@@ -1,4 +1,3 @@
-import re
 import sys
 from PIL import Image
 from MyFunctions import CheckPaths, Paths
