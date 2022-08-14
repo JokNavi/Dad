@@ -15,7 +15,7 @@ Dot = 1
 #C.FindEdges(Dot,Directions,Coords)
 
 Im = Image.open('MainProject\Out\Lines.tif')
-CH = CheckPaths(Im)
+#CH = CheckPaths(Im)
 #print(CH.Size())
 #print(CH.FindColour(0,0))
 #print(CH.ReplaceColour(0,0))
@@ -23,7 +23,7 @@ CH = CheckPaths(Im)
 P = Paths()
 ##P.ShortestPath(0,3,))
 
-CP = CheckPaths(Im)
+#CP = CheckPaths(Im)
 Directions = ['-X','+X','-Y','+Y']
 Dot = 0
 #CP.Size()
@@ -63,8 +63,8 @@ class MainProgram():
         IM = ImageManipulation(Im)
         Coords = IM.TrackCorners('MainProject\Out\Lines.tif')
         M.ShowIntersects(Coords)
-        #CP = CheckPaths(Im, Coords)
-        #FindEdges(self, Coord, DirectionsL)
+        CP = CheckPaths('MainProject\Out\Lines.tif', Coords)
+        CP.FindClosest(Axis,SpecialCoord)
         #CP.FindClosest()
 
         

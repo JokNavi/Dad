@@ -6,7 +6,7 @@ import json
 import numpy as np
 import networkx as nx 
 
-class Colours():
+class Colours:
 
     def HexToRgb(self,HEX):
         LineColourHex = HEX.lstrip('#')
@@ -36,13 +36,10 @@ class Paths():
         G.add_edge("2", "3", weight=4)
         return nx.shortest_path(G, str(Start), str(End), weight="weight")
 
-class CheckPaths():
+class CheckPaths:
     def __init__(self, ImagePath, Coords):
         self.PhotoPath = ImagePath
         self.Coords = Coords
-
-    def __init__(self,Im):
-        self.Im = Im
 
     def Size(self):
         return self.Im.size
@@ -56,77 +53,32 @@ class CheckPaths():
             pix[X,Y] = 255,255,255
             self.Im.save('MainProject\Out\Modified.png')
 
-    def FindEdges(self, Coord, DirectionsL):
+    def FindEdges(self, Coord, Direction):
         Minus = lambda a : int(a) - 15
         Plus = lambda a : int(a) + 15
-        if '-X' in DirectionsL and CheckPaths.FindColour(self,Minus(Coord[0]),Coord[1])>(20,20,20):
+        if '-X' in Direction and CheckPaths.FindColour(self,Minus(Coord[0]),Coord[1])>(20,20,20):
             return '-X'
-        if '+X' in DirectionsL and CheckPaths.FindColour(self,Plus(Coord[0]),Coord[1])>(20,20,20):
+        if '+X' in Direction and CheckPaths.FindColour(self,Plus(Coord[0]),Coord[1])>(20,20,20):
                 return '+X'
-        if '-Y' in DirectionsL and CheckPaths.FindColour(self,Coord[0],Minus(Coord[1]))>(20,20,20):
+        if '-Y' in Direction and CheckPaths.FindColour(self,Coord[0],Minus(Coord[1]))>(20,20,20):
                 return '-Y'
-        if '+Y' in DirectionsL and CheckPaths.FindColour(self,Coord[0],Plus(Coord[1]))>(20,20,20):
+        if '+Y' in Direction and CheckPaths.FindColour(self,Coord[0],Plus(Coord[1]))>(20,20,20):
                 return '+Y'
         else: return None
             
-    def ClosestDot(self, Dot, Facing):
-        with open('MainProject\Out\CoordsGreenDots.json') as File:
-            Coords = json.load(File)
-        File.close()
-        Coord = Coords[f'{Dot}']
-        #print(Coord)
-        FoundGreen = False
-
-        if Facing == '-X':
-            Coord[0] = Coord[0] -8
-            while FoundGreen == False:
-                if  Coord[0] < 0: break
-                Coord[0] = Coord[0] -10
-                Colour = CheckPaths.FindColour(self,Coord[0],Coord[1])
-                if((Colour[1] >240)):
-                    FoundGreen = True
-                #print(str(Coord[0]))
-                CheckPaths.ReplaceColour(self,Coord[0],Coord[1])
-                return Coord[0]
-
-        elif Facing == '+X':
-            Coord[0] = Coord[0] +8
-            while FoundGreen == False:
-                if  Coord[0] < 0: break
-                Coord[0] = Coord[0] +10
-                Colour = CheckPaths.FindColour(self,Coord[0],Coord[1])
-                if((Colour[1] >240)):
-                    FoundGreen = True
-                #print(str(Coord[0]))
-                CheckPaths.ReplaceColour(self,Coord[0],Coord[1])
-                return Coord[0]
-
-        elif Facing == '-Y':
-            Coord[1] = Coord[1] -8
-            while FoundGreen == False:
-                if  Coord[1] < 0: break
-                Coord[1] = Coord[1] -10
-                Colour = CheckPaths.FindColour(self,Coord[0],Coord[1])
-                if((Colour[1] >240)):
-                    FoundGreen = True
-                #print(str(Coord[1]))
-                CheckPaths.ReplaceColour(self,Coord[0],Coord[1])
-                return Coord[1]
-
-        elif Facing == '+Y':
-            Coord[1] = Coord[1] +8
-            while FoundGreen == False:
-                if  Coord[1] < 0: break
-                Coord[1] = Coord[1] +10
-                Colour = CheckPaths.FindColour(self,Coord[0],Coord[1])
-                if((Colour[1] >240)):
-                    FoundGreen = True
-                #print(str(Coord[1]))
-                CheckPaths.ReplaceColour(self,Coord[0],Coord[1])
-                return Coord[1]
-
-    def FindClosest(self,Axis,SpecialCoord):
-        pass
+    def ClosestDot(self, Coord):
+        CP = CheckPaths('MainProject\Out\Lines.tif', self.Coords)
+        Directions = ['-X','+X','-Y','+Y']
+        FoundWhite = False
+        for Direction in Directions:
+            if CP.FindEdges(self, Coord, Direction) != None:
+                pass #then go untill you hit an intersect
+            
+            
+    def FindClosest(self):
+        CP = CheckPaths('MainProject\Out\Lines.tif', self.Coords)
+        for Coord in self.Coords:
+            CP.ClosestDot(self, Coord)
         
         #myArr[myArr < myNumber].max()
  
