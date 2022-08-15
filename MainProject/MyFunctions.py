@@ -1,13 +1,17 @@
 #FUNCTIONS
+from configparser import LegacyInterpolation
+import math
+import re
 import sys
 import cv2
-import math
-import json
 import numpy as np
-import networkx as nx 
+import pandas as pd
+import networkx as nx
+from PIL import Image
 
-class Colours():
 
+
+class Colours:
     def HexToRgb(self,HEX):
         LineColourHex = HEX.lstrip('#')
         Output = list(tuple(int(LineColourHex[i:i+2], 16) for i in (0, 2, 4)))
@@ -21,120 +25,148 @@ class Colours():
         return Output
 
 class Paths():  
-    def Length(self,InputOne,InputTwo):
-        #0,1 | x1, y1
-        #1,0 | x2, y2
-        #dist = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
-        Dist = math.sqrt((int(InputTwo[0]) - int(InputOne[0]))**2 + (int(InputTwo[1]) - int(InputOne[1]))**2) 
-        return Dist 
+    def Length(self,CoordsOne,CoordsTwo):
+        InputOne = re.sub("\'","", str(CoordsOne))
+        InputOne = InputOne.split(', ')
+        InputTwo = re.sub("\'","", str(CoordsTwo))
+        InputTwo = InputTwo.split(', ')
+        Length =  (int(InputOne[0]) - int(InputTwo[0]))*-1, (int(InputOne[1]) - int(InputTwo[1]))*-1
+        return Length
         
-    def ShortestPath(self,Start,End,Nodes):
-        G = nx.Graph()
-        G.add_edge("0", "1", weight=4)
-        G.add_edge("1", "3", weight=2)
-        G.add_edge("0", "2", weight=3)
-        G.add_edge("2", "3", weight=4)
-        return nx.shortest_path(G, str(Start), str(End), weight="weight")
+   
+       
+        
 
-class CheckPaths():
-    def __init__(self,Im):
-        self.Im = Im
+class CheckPaths:
+    def __init__(self, ImagePath, Coords):
+        self.ImagePath = ImagePath
+        self.Coords = Coords
 
     def Size(self):
         return self.Im.size
 
     def FindColour(self, X, Y):
-            pix = self.Im.load()
-            return pix[X,Y]
+            Im = Image.open(self.ImagePath)
+            Im = Im.convert("RGB")
+            return Im.getpixel((int(X),int(Y)))
 
     def ReplaceColour(self,X,Y):
-            pix = self.Im.load()
-            pix[X,Y] = 255,255,255
-            self.Im.save('MainProject\Out\Modified.png')
+            Im = Image.open(self.ImagePath)
+            Im.putpixel((int(X),int(Y)),(255, 255, 255))
+            Im.save('MainProject\Out\Modified.tif')
 
-    def FindEdges(self, Dot, DirectionsL):
-        with open('MainProject\Out\CoordsGreenDots.json') as File:
-            Coords = json.load(File)
-        File.close()
-        Coord = Coords[f'{Dot}']
-        Minus = lambda a : int(a) - 15
-        Plus = lambda a : int(a) + 15
-        #Output = (0,0,0)
-        if '-X' in DirectionsL and CheckPaths.FindColour(self,Minus(Coord[0]),Coord[1])>(20,20,20):
+    def FindEdges(self, Coord, Direction, Value):
+        Coord = re.sub("\'","", str(Coord))
+        Coord = re.sub("\"","", str(Coord))
+        Minus = lambda a : int(a) - Value
+        Plus = lambda a : int(a) + Value
+        if '-X' in Direction and CheckPaths.FindColour(self, Minus(int(Coord[0])),int(Coord[1]))>(30,30,30):
             return '-X'
-
-        if '+X' in DirectionsL and CheckPaths.FindColour(self,Plus(Coord[0]),Coord[1])>(20,20,20):
+        if '+X' in Direction and CheckPaths.FindColour(self, Plus(int(Coord[0])),int(Coord[1]))>(30,30,30):
                 return '+X'
-
-        if '-Y' in DirectionsL and CheckPaths.FindColour(self,Coord[0],Minus(Coord[1]))>(20,20,20):
+        if '-Y' in Direction and CheckPaths.FindColour(self, int(Coord[0]),Minus(int(Coord[1])))>(30,30,30):
                 return '-Y'
-
-        if '+Y' in DirectionsL and CheckPaths.FindColour(self,Coord[0],Plus(Coord[1]))>(20,20,20):
+        if '+Y' in Direction and CheckPaths.FindColour(self, int(Coord[0]),Plus(int(Coord[1])))>(30,30,30):
                 return '+Y'
         else: return None
             
-    def ClosestDot(self, Dot, Facing):
-        with open('MainProject\Out\CoordsGreenDots.json') as File:
-            Coords = json.load(File)
-        File.close()
-        Coord = Coords[f'{Dot}']
-        #print(Coord)
-        FoundGreen = False
+    def ClosestDot(self, CoordSpecific):
+        CP = CheckPaths('MainProject\Out\Intersects.tif', self.Coords)
+        Directions = ['-X','+X','-Y','+Y']
+        Im = Image.open('MainProject\Out\Intersects.tif')
+        CoordSpecific = list(CoordSpecific)
+        LinkedCoord = []
+        for Direction in Directions:
+            Looking = CP.FindEdges(CoordSpecific, Direction, 16)
+            Coord = CoordSpecific
+            if Looking != None:
+                print(Looking)
+                Minus = lambda a : int(a) - 1
+                Plus = lambda a : int(a) + 1
+                while True or abs(int(Coord[0])) >= 1000 or abs(int(Coord[1])) >= 1000:
+                    pix = Im.load()
+                    pix[int(Coord[0]),int(Coord[1])] = 255,255,255
+                    if '-X' in Direction: Coord = [Minus(Coord[0]),int(Coord[1])]
+                    if '+X' in Direction: Coord = [Plus(Coord[0]),int(Coord[1])]
+                    if '-Y' in Direction: Coord = [int(Coord[0]),Minus(Coord[1])]
+                    if '+Y' in Direction: Coord = [int(Coord[0]), Plus(Coord[1])]
+                    MoveOne = CP.FindColour(int(Coord[0]), int(Coord[1]))
+                    Im.save('MainProject\Out\Modified.tif')
+                    if abs(int(Coord[0])) >= 1500 or abs(int(Coord[1])) >= 1500: return 'Took too long'
+                    if MoveOne >= (255, 20, 20): 
+                        LinkedCoord.append(Coord)
+                        break
+        return LinkedCoord
 
-        if Facing == '-X':
-            Coord[0] = Coord[0] -8
-            while FoundGreen == False:
-                if  Coord[0] < 0: break
-                Coord[0] = Coord[0] -10
-                Colour = CheckPaths.FindColour(self,Coord[0],Coord[1])
-                if((Colour[1] >240)):
-                    FoundGreen = True
-                #print(str(Coord[0]))
-                CheckPaths.ReplaceColour(self,Coord[0],Coord[1])
-                return Coord[0]
+    def FindClosest(self):
+        CP = CheckPaths('MainProject\Out\Intersects.tif', self.Coords)
+        LinkedCoord = []
+        for Coord in self.Coords:
+            print(Coord)
+            Coord = re.findall('[0-9]+', str(Coord))
+            LinkedCoord.append([Coord, CP.ClosestDot(Coord)])
+            print('\n')
+        return LinkedCoord
 
-        elif Facing == '+X':
-            Coord[0] = Coord[0] +8
-            while FoundGreen == False:
-                if  Coord[0] < 0: break
-                Coord[0] = Coord[0] +10
-                Colour = CheckPaths.FindColour(self,Coord[0],Coord[1])
-                if((Colour[1] >240)):
-                    FoundGreen = True
-                #print(str(Coord[0]))
-                CheckPaths.ReplaceColour(self,Coord[0],Coord[1])
-                return Coord[0]
-
-        elif Facing == '-Y':
-            Coord[1] = Coord[1] -8
-            while FoundGreen == False:
-                if  Coord[1] < 0: break
-                Coord[1] = Coord[1] -10
-                Colour = CheckPaths.FindColour(self,Coord[0],Coord[1])
-                if((Colour[1] >240)):
-                    FoundGreen = True
-                #print(str(Coord[1]))
-                CheckPaths.ReplaceColour(self,Coord[0],Coord[1])
-                return Coord[1]
-
-        elif Facing == '+Y':
-            Coord[1] = Coord[1] +8
-            while FoundGreen == False:
-                if  Coord[1] < 0: break
-                Coord[1] = Coord[1] +10
-                Colour = CheckPaths.FindColour(self,Coord[0],Coord[1])
-                if((Colour[1] >240)):
-                    FoundGreen = True
-                #print(str(Coord[1]))
-                CheckPaths.ReplaceColour(self,Coord[0],Coord[1])
-                return Coord[1]
-
-    def FindClosest(self,Axis,SpecialCoord):
-        with open('MainProject\Out\CoordsGreenDots.json') as File:
-            Coords = json.load(File)
+    def FindDistance(self):
+        P = Paths()
+        CP = CheckPaths('MainProject\Out\Intersects.tif', self.Coords)
+        Directions = ['-X','+X','-Y','+Y']
+        LinkedCoords = []
+        Distances = []
+        with open(r'MainProject\Out\LinkedCoords.txt', 'r') as f:
+            for line in f:
+                RemoveLB = line[:-1]
+                LinkedCoords.append(RemoveLB)
         
-        #myArr[myArr < myNumber].max()
+        for LineTwo in LinkedCoords:
+            MainCoords = re.sub("\'","", str(LineTwo))
+            MainCoords = re.sub("\"","", str(MainCoords))
+            MainCoords = re.findall(r"\'*[0-9]+\'*, \'*[0-9]+\'*", str(LineTwo))
+            print(MainCoords)
+            for Direction in Directions:
+                Looking = CP.FindEdges(MainCoords[0], Direction, 16)
+                if Looking != None: break
+            Counter = 1
+            Lengths = []
+            while Counter <= len(MainCoords)-1:
+                Length = P.Length(MainCoords[0],MainCoords[Counter])
+                print(Length)
+                Lengths.append(Length)
+                Counter = Counter + 1
+            Distances.append(Lengths)
+            print('\n')
+        return Distances
 
+    def AddToGraph(self, Distances, Coords):
+        LinkedCoords = []
+        Distances = Distances[0]
+        with open(r'MainProject\Out\LinkedCoords.txt', 'r') as f:
+            for line in f:
+                RemoveLB = line[:-1]
+                LinkedCoords.append(RemoveLB)
+        G = nx.Graph()
+        Counter = 0
+        for Line in LinkedCoords:
+            Distances = re.findall(r"[0-9]+", str(Distances))
+            QuantityZeros = re.findall(r"0", str(Distances))
+            for QuantityZeros
+            LineCoords = list(re.findall(r"[0-9]+, [0-9]+", str(Line)))
+            if isinstance(len(Line)/2, float) == True:
+                while Counter <= int(len(Distances)/2)+1:
+                    IndexOne = Coords.index(f'[{LineCoords[Counter]}]')
+                    IndexTwo = Coords.index(f'[{LineCoords[Counter+1]}]')
+                    G.add_edge(str(IndexOne), str(IndexTwo), weight= int(Distances[Counter]))
+                    Counter = Counter + 1
+                    print('added')
+            else:
+                while Counter <= len(Line)/2:
+                    IndexOne = Coords.index(LineCoords[Counter])
+                    IndexTwo = Coords.index(LineCoords[Counter+1])
+                    G.add_edge(str(IndexOne), str(IndexTwo), weight=int(Distances[Counter]))
+                    Counter = Counter + 1
+                    print('added')
+        return nx.shortest_path(G, str(0), str(3), weight="weight")
  
 if(__name__ == '__main__'):
     sys.exit()

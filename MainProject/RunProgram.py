@@ -1,38 +1,12 @@
 import re
 import sys
+from typing_extensions import Self
 from PIL import Image
 from MyFunctions import CheckPaths, Paths
 from ImageStuff import Tracking, ImageManipulation, Intersects
 
 #TESTING
 Im = Image.open('MainProject\Out\Lines.tif')
-IM = ImageManipulation(Im)
-#I.TrackCorners('MainProject\Out\Lines.jpg')
-#I.Center('MainProject\Out\Intersects.jpg')
-
-C = Tracking(Im)
-Directions = ['-X','+X','-Y','+Y']
-Dot = 1
-#C.FindEdges(Dot,Directions,Coords)
-
-Im = Image.open('MainProject\Out\Lines.tif')
-CH = CheckPaths(Im)
-#print(CH.Size())
-#print(CH.FindColour(0,0))
-#print(CH.ReplaceColour(0,0))
-
-P = Paths()
-##P.ShortestPath(0,3,))
-
-CP = CheckPaths(Im)
-Directions = ['-X','+X','-Y','+Y']
-Dot = 0
-#CP.Size()
-#print(CP.FindColour(877,782))
-#Facing =  CP.FindEdges(Dot,Directions)
-#Axis = CP.ClosestDot(1,Facing)
-#print(CP.FindClosest(Facing,Axis))
-
 I = Intersects('MainProject\Out\Lines.tif')
 '''Coords = IM.TrackCorners('MainProject\Out\Lines.tif')
 Dot = 0
@@ -43,13 +17,11 @@ while Dot < 64:
     Dot = Dot + 1'''
 
 class MainProgram():
-    #PROGRAM
-    def Start():
-        Im = Image.open('MainProject\Out\Lines.tif')
-        I = Intersects('MainProject\Out\Lines.tif')
-        IM = ImageManipulation(Im)
+    def __init__(self, ImagePath):
+        self.ImagePath = ImagePath
 
-        Coords = IM.TrackCorners('MainProject\Out\Lines.tif')
+    #FUNCTIONS
+    def ShowIntersects(self, Coords):
         Dot = 0
         print(len(Coords))
         Points = []
@@ -59,9 +31,44 @@ class MainProgram():
             Coord = Points[Dot]
             pix[int(Coord[0]),int(Coord[1])] = (255,255,255)
             Dot = Dot + 1
-        Im.save('MainProject\Out\Intersects.tif') 
+        Im.save(self.ImagePath)
+        return Points
+
+    def NewImage(self, Coords):
+        CP = CheckPaths(self.ImagePath, Coords)
+        LinkedCoords = CP.FindClosest()
+        with open(r'MainProject\Out\LinkedCoords.txt', 'w') as f:
+            for LinkedCoord in LinkedCoords:
+                f.write(f'{LinkedCoord}\n')
+
+    #PROGRAM
+    def Start(self, NewImage):
+        ImagePath = self.ImagePath
+        Im = Image.open(ImagePath)
+        M = MainProgram(ImagePath)
+        IM = ImageManipulation(ImagePath)
+        CoordsCorners = IM.TrackCorners(ImagePath)
+        Coords = M.ShowIntersects(CoordsCorners)
+        CP = CheckPaths(ImagePath, Coords)
+        Coords = re.findall('[[0-9]+, [0-9]+]', str(Coords))
+        Coords = [*set(Coords)]
+        if NewImage == True:
+            M.NewImage(ImagePath , Coords)
+            Distances = CP.FindDistance()
+            Path =CP.AddToGraph(Distances, Coords)
+            print(Path)
+        else: 
+           Distances =  CP.FindDistance()
+           Path = CP.AddToGraph(Distances, Coords)
+           print(Path)           
+
+        print('Done')
+        #CP.AddToGraph(LinkedCoords)
+
+        
 #RUN [(90, 726), (80, 736)
-print(MainProgram.Start())
+M = MainProgram('MainProject\Out\Lines.tif')
+print(M.Start(False))
 
 
 if (__name__ == '__main__'):
