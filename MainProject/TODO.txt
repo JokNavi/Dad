@@ -1,4 +1,7 @@
 PLAN OF ATTACK
 -write it down
 
+.TIF file
+Rectangle legacy Brush
 make sure 2 close parralell lines always are able to fit atleast one line inbetween
+Smaller map = better
