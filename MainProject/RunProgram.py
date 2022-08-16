@@ -1,7 +1,7 @@
 import re
 import sys
-from typing_extensions import Self
 from PIL import Image
+import networkx as nx
 from MyFunctions import CheckPaths, Paths
 from ImageStuff import Tracking, ImageManipulation, Intersects
 
@@ -19,9 +19,17 @@ while Dot < 64:
 class MainProgram():
     def __init__(self, ImagePath):
         self.ImagePath = ImagePath
+        Coords = []
+        with open('MainProject/Out/Coords.txt', 'r') as f:
+            for line in f:
+                RemoveLB = line[:-1]
+                Coords.append(RemoveLB)
+        self.Coords = Coords
 
     #FUNCTIONS
-    def ShowIntersects(self, Coords):
+    def ShowIntersects(self):
+        Coords = self.Coords
+        ImagePath = self.ImagePath
         Dot = 0
         print(len(Coords))
         Points = []
@@ -31,11 +39,11 @@ class MainProgram():
             Coord = Points[Dot]
             pix[int(Coord[0]),int(Coord[1])] = (255,255,255)
             Dot = Dot + 1
-        Im.save(self.ImagePath)
+        Im.save(ImagePath)
         return Points
 
-    def NewImage(self, Coords):
-        CP = CheckPaths(self.ImagePath, Coords)
+    def NewImage(self):
+        CP = CheckPaths(self.ImagePath)
         LinkedCoords = CP.FindClosest()
         with open(r'MainProject\Out\LinkedCoords.txt', 'w') as f:
             for LinkedCoord in LinkedCoords:
@@ -47,20 +55,25 @@ class MainProgram():
         Im = Image.open(ImagePath)
         M = MainProgram(ImagePath)
         IM = ImageManipulation(ImagePath)
-        CoordsCorners = IM.TrackCorners(ImagePath)
-        Coords = M.ShowIntersects(CoordsCorners)
-        CP = CheckPaths(ImagePath, Coords)
-        Coords = re.findall('[[0-9]+, [0-9]+]', str(Coords))
-        Coords = [*set(Coords)]
         if NewImage == True:
-            M.NewImage(ImagePath , Coords)
+            CoordsCorners = IM.TrackCorners(ImagePath)
+            Coords = M.ShowIntersects()
+            Coords = re.findall('[[0-9]+, [0-9]+]', str(Coords))
+            Coords = [*set(Coords)]
+            with open('MainProject/Out/Coords.txt', 'w') as f:
+                for Coord in Coords:
+                    f.write(f'{Coord}\n')
+            CP = CheckPaths(ImagePath)
+            M.NewImage()
             Distances = CP.FindDistance()
-            Path =CP.AddToGraph(Distances, Coords)
+            Path =CP.AddToGraph(Distances)
             print(Path)
-        else: 
-           Distances =  CP.FindDistance()
-           Path = CP.AddToGraph(Distances, Coords)
-           print(Path)           
+        else:
+            CP = CheckPaths(ImagePath)
+            Distances =  CP.FindDistance()
+            G = CP.AddToGraph(Distances)
+            nx.shortest_path(G, str(0), str(3), weight="weight")
+            print(Path)           
 
         print('Done')
         #CP.AddToGraph(LinkedCoords)
@@ -68,7 +81,7 @@ class MainProgram():
         
 #RUN [(90, 726), (80, 736)
 M = MainProgram('MainProject\Out\Lines.tif')
-print(M.Start(False))
+print(M.Start(True))
 
 
 if (__name__ == '__main__'):
