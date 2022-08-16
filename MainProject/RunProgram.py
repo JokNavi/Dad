@@ -27,8 +27,7 @@ class MainProgram():
         self.Coords = Coords
 
     #FUNCTIONS
-    def ShowIntersects(self):
-        Coords = self.Coords
+    def ShowIntersects(self, Coords):
         ImagePath = self.ImagePath
         Dot = 0
         print(len(Coords))
@@ -55,9 +54,9 @@ class MainProgram():
         Im = Image.open(ImagePath)
         M = MainProgram(ImagePath)
         IM = ImageManipulation(ImagePath)
-        if NewImage == True:
+        if NewImage == 'True':
             CoordsCorners = IM.TrackCorners(ImagePath)
-            Coords = M.ShowIntersects()
+            Coords = M.ShowIntersects(CoordsCorners)
             Coords = re.findall('[[0-9]+, [0-9]+]', str(Coords))
             Coords = [*set(Coords)]
             with open('MainProject/Out/Coords.txt', 'w') as f:
@@ -81,7 +80,7 @@ class MainProgram():
         
 #RUN [(90, 726), (80, 736)
 M = MainProgram('MainProject\Out\Lines.tif')
-print(M.Start(True))
+print(M.Start('True'))
 
 
 if (__name__ == '__main__'):

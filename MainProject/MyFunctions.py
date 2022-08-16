@@ -6,7 +6,6 @@ import numpy as np
 import networkx as nx
 from PIL import Image
 
-
 class Colours:
     def HexToRgb(self, HEX):
         LineColourHex = HEX.lstrip('#')
@@ -19,7 +18,6 @@ class Colours:
         Output = cv2.cvtColor(BGR, cv2.COLOR_BGR2HSV)
         print(Output)
         return Output
-
 
 class Paths():
     def Length(self, CoordsOne, CoordsTwo):
@@ -58,6 +56,7 @@ class CheckPaths:
     def FindEdges(self, Coord, Direction, Value):
         Coord = re.sub("\'", "", str(Coord))
         Coord = re.sub("\"", "", str(Coord))
+        Coord = re.findall(r"[0-9]+", str(Coord))
         def Minus(a): return int(a) - Value
         def Plus(a): return int(a) + Value
         if '-X' in Direction and CheckPaths.FindColour(self, Minus(int(Coord[0])), int(Coord[1])) > (30, 30, 30):
@@ -96,7 +95,7 @@ class CheckPaths:
                     if '+Y' in Direction:
                         Coord = [int(Coord[0]), Plus(Coord[1])]
                     MoveOne = CP.FindColour(int(Coord[0]), int(Coord[1]))
-                    Im.save('MainProject\Out\Modified.tif')
+                    Im.save('MainProject/Out/Modified.tif')
                     if abs(int(Coord[0])) >= 1500 or abs(int(Coord[1])) >= 1500:
                         return 'Took too long'
                     if MoveOne >= (255, 20, 20):
@@ -105,18 +104,18 @@ class CheckPaths:
         return LinkedCoord
 
     def FindClosest(self):
-        CP = CheckPaths('MainProject\Out\Intersects.tif')
+        CP = CheckPaths('MainProject/Out/Intersects.tif')
         LinkedCoord = []
         for Coord in self.Coords:
             print(Coord)
-            Coord = re.findall('[0-9]+', str(Coord))
-            LinkedCoord.append([Coord, CP.ClosestDot(Coord)])
+            CoordTemp = re.findall('[0-9]+', str(Coord))
+            LinkedCoord.append([Coord, CP.ClosestDot(CoordTemp)])
             print('\n')
         return LinkedCoord
 
     def FindDistance(self):
         P = Paths()
-        CP = CheckPaths('MainProject\Out\Intersects.tif')
+        CP = CheckPaths('MainProject/Out/Intersects.tif')
         Directions = ['-X', '+X', '-Y', '+Y']
         LinkedCoords = []
         Distances = []
@@ -133,8 +132,7 @@ class CheckPaths:
             print(MainCoords)
             for Direction in Directions:
                 Looking = CP.FindEdges(MainCoords[0], Direction, 16)
-                if Looking != None:
-                    break
+                if Looking != None: break
             Counter = 1
             Lengths = []
             while Counter <= len(MainCoords)-1:
@@ -150,7 +148,7 @@ class CheckPaths:
         Coords = self.Coords
         LinkedCoords = []
         Distances = Distances[0]
-        with open(r'MainProject\Out\LinkedCoords.txt', 'r') as f:
+        with open('MainProject/Out/LinkedCoords.txt', 'r') as f:
             for line in f:
                 RemoveLB = line[:-1]
                 LinkedCoords.append(RemoveLB)
@@ -171,7 +169,6 @@ class CheckPaths:
                 Counter = Counter + 1
                 print('added')
         return G
-
 
 if(__name__ == '__main__'):
     sys.exit()
