@@ -83,7 +83,7 @@ class CheckPaths:
                 print(Looking)
                 def Minus(a): return int(a) - 1
                 def Plus(a): return int(a) + 1
-                while True or abs(int(Coord[0])) >= 1000 or abs(int(Coord[1])) >= 1000:
+                while abs(int(Coord[0])) >= 1000 or abs(int(Coord[1])) >= 1000:
                     pix = Im.load()
                     pix[int(Coord[0]), int(Coord[1])] = 255, 255, 255
                     if '-X' in Direction:
